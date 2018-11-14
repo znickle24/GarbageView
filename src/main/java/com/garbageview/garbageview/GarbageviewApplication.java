@@ -37,30 +37,3 @@ public class GarbageviewApplication
 //
 //}
 
-@Entity
-class GarbageCollections {
-  @Id @GeneratedValue
-  private long id;
-
-  private String garbagecollector;
-  private String gcType;
-  private long gcInfoId;
-  private String gcInfoName;
-  private String gcInfoCause;
-  private long gcInfoDuration;
-  private String memoryUsageAfterGC;
-  private String memoryUsageBeforeGC;
-  private long gcOverhead;
-  public GarbageCollections(String garbagecollector, String gcType, long gcInfoId, String gcInfoName, String gcInfoCause,
-  long gcInfoDuration, String memoryUsageAfterGC, String memoryUsageBeforeGC, long gcOverhead) {
-    this.garbagecollector = garbagecollector;
-    this.gcType = gcType;
-    this.gcInfoId = gcInfoId;
-    this.gcInfoName = gcInfoName;
-    this.gcInfoCause = gcInfoCause;
-    this.gcInfoDuration = gcInfoDuration;
-    this.memoryUsageAfterGC = memoryUsageAfterGC;
-    this.memoryUsageBeforeGC = memoryUsageBeforeGC;
-    this.gcOverhead = gcOverhead;
-  }
-}
