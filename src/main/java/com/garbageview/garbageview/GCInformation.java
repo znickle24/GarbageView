@@ -3,6 +3,7 @@ package com.garbageview.garbageview;
 import com.sun.management.GarbageCollectionNotificationInfo;
 import com.sun.management.GarbageCollectorMXBean;
 import com.sun.management.GcInfo;
+import org.springframework.stereotype.Component;
 
 import javax.management.MBeanServer;
 import javax.management.Notification;
@@ -14,6 +15,7 @@ import java.lang.management.MemoryUsage;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class GCInformation {
   private static final String GC_BEAN_NAME = "java.lang:type=GarbageCollector,name=PS Scavenge";
   private static volatile GarbageCollectorMXBean gcMBean;
