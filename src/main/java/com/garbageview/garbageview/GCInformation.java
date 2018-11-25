@@ -101,6 +101,7 @@ public class GCInformation {
             totalGcDuration += info.getGcInfo().getDuration();
             long percent = totalGcDuration*1000L/info.getGcInfo().getEndTime();
             System.out.println("GC cumulated overhead "+(percent/10)+"."+(percent%10)+"%");
+            //add to db and broadcast via socket
           }
         }
       };
