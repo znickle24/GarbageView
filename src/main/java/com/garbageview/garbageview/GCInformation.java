@@ -47,7 +47,7 @@ public class GCInformation {
     }
   }
 
-  public static void installGCMonitoring(){
+  public static void installGCMonitoring(GarbageCollectionRepo gcr){
     //get all the GarbageCollectorMXBeans - there's one for each heap generation
     //so probably two - the old generation and young generation
     List<java.lang.management.GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
@@ -78,8 +78,12 @@ public class GCInformation {
             System.out.println(gctype + ": - " + info.getGcInfo().getId()+ " " + info.getGcName() + " (from " + info.getGcCause()+") "+duration + " milliseconds; start-end times " + info.getGcInfo().getStartTime()+ "-" + info.getGcInfo().getEndTime());
             //uncomment this line if you'd like to get the composite types of the objects from GcInfo
             //System.out.println("GcInfo CompositeType: " + info.getGcInfo().getCompositeType());
-            System.out.println("GcInfo MemoryUsageAfterGc: " + info.getGcInfo().getMemoryUsageAfterGc());
-            System.out.println("GcInfo MemoryUsageBeforeGc: " + info.getGcInfo().getMemoryUsageBeforeGc());
+            String memUsageAfterGc = info.getGcInfo().getMemoryUsageAfterGc().toString();
+            String memUsageBeforeGc = info.getGcInfo().getMemoryUsageBeforeGc().toString();
+            String dbMUAGc = "GcInfo MemoryUsageAfterGc: " + memUsageAfterGc;
+            String dbMUBGc = "GcInfo MemoryUsageBeforeGc: " + memUsageBeforeGc;
+            System.out.println("GcInfo MemoryUsageAfterGc: " + memUsageAfterGc);
+            System.out.println("GcInfo MemoryUsageBeforeGc: " + memUsageBeforeGc);
 
             //Get the information about each memory space, and pretty print it
             Map<String, MemoryUsage> membefore = info.getGcInfo().getMemoryUsageBeforeGc();
@@ -101,12 +105,21 @@ public class GCInformation {
             totalGcDuration += info.getGcInfo().getDuration();
             long percent = totalGcDuration*1000L/info.getGcInfo().getEndTime();
             System.out.println("GC cumulated overhead "+(percent/10)+"."+(percent%10)+"%");
+
+            gcr.save(new GarbageCollection(info.getGcAction(), gctype, info.getGcInfo().getId(), info.getGcName(), info.getGcCause(),
+                duration, dbMUAGc, dbMUBGc, percent));
           }
         }
       };
       //Add the listener
+
       emitter.addNotificationListener(listener, null, null);
     }
   }
+  public String toJSON(String dbInfo) {
+
+    return "";
+  }
+
 }
 

@@ -8,11 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -32,7 +31,7 @@ public class GarbageviewApplication
   CommandLineRunner runner (GarbageCollectionRepo gcr) {
    return args -> {
      //as soon as the beans are ready, install the monitor for each gc event
-     GCInformation.installGCMonitoring();
+     GCInformation.installGCMonitoring(gcr);
 
      //for initial testing before running with the actual gcMonitor, testing to make sure that these are saving in the repo
      gcr.save( new GarbageCollection("PS1", "old", 21, "GCInfoName", "End of Loop",
@@ -87,7 +86,9 @@ class GarbageCollection
   private String gcInfoName;
   private String gcInfoCause;
   private long gcInfoDuration;
+  @Column (length = 5000)
   private String memoryUsageAfterGC;
+  @Column (length=5000)
   private String memoryUsageBeforeGC;
   private long gcOverhead;
 
