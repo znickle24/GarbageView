@@ -33,6 +33,8 @@ public class GarbageviewApplication
      //as soon as the beans are ready, install the monitor for each gc event
      GCInformation.installGCMonitoring(gcr);
 
+     //the above start the monitoring - instead of printing this, save thi to the repo and broadcast via the socket out
+
      //for initial testing before running with the actual gcMonitor, testing to make sure that these are saving in the repo
      gcr.save( new GarbageCollection("PS1", "old", 21, "GCInfoName", "End of Loop",
          1000, "UsedMemoryAfter", "UsedMemoryBefore", 25));
@@ -50,6 +52,7 @@ public class GarbageviewApplication
 
 @RestController
 class GarbageViewControllers {
+  //creates the current endpoint
   @RequestMapping("/garbagecollections")
   Collection<GarbageCollection> garbageCollections() {
     return this.garbageCollectionsRepo.findAll();

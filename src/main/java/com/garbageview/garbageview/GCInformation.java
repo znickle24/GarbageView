@@ -108,6 +108,8 @@ public class GCInformation {
 
             gcr.save(new GarbageCollection(info.getGcAction(), gctype, info.getGcInfo().getId(), info.getGcName(), info.getGcCause(),
                 duration, dbMUAGc, dbMUBGc, percent));
+            //add to db and broadcast via socket
+
           }
         }
       };
