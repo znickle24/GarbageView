@@ -23,29 +23,29 @@ public class GCInformation {
   public GCInformation() {
   }
   // initialize the GC MBean field
-  private static void initGCMBean() {
-    if (gcMBean == null) {
-      synchronized (GCInformation.class) {
-        if (gcMBean == null) {
-          gcMBean = getGCMBean();
-        }
-      }
-    }
-  }
-  // get the GarbageCollectorMXBean MBean from the
-  // platform MBean server
-  private static GarbageCollectorMXBean getGCMBean() {
-    try {
-      MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-      GarbageCollectorMXBean bean =
-          ManagementFactory.newPlatformMXBeanProxy(server, GC_BEAN_NAME, GarbageCollectorMXBean.class);
-      return bean;
-    } catch (RuntimeException re) {
-      throw re;
-    } catch (Exception exp) {
-      throw new RuntimeException(exp);
-    }
-  }
+//  private static void initGCMBean() {
+//    if (gcMBean == null) {
+//      synchronized (GCInformation.class) {
+//        if (gcMBean == null) {
+//          gcMBean = getGCMBean();
+//        }
+//      }
+//    }
+//  }
+//  // get the GarbageCollectorMXBean MBean from the
+//  // platform MBean server
+//  private static GarbageCollectorMXBean getGCMBean() {
+//    try {
+//      MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+//      GarbageCollectorMXBean bean =
+//          ManagementFactory.newPlatformMXBeanProxy(server, GC_BEAN_NAME, GarbageCollectorMXBean.class);
+//      return bean;
+//    } catch (RuntimeException re) {
+//      throw re;
+//    } catch (Exception exp) {
+//      throw new RuntimeException(exp);
+//    }
+//  }
 
   public static void installGCMonitoring(GarbageCollectionRepo gcr){
     //get all the GarbageCollectorMXBeans - there's one for each heap generation
