@@ -60,6 +60,27 @@ class App extends Component {
       </div>
     );
   }
+
+  function connect() {
+      ws = new WebSocket('ws://localhost:8080/name');
+      ws.onmessage = function(data){
+          showJSON(data.data);
+      }
+      setConnected(true);
+  }
+
+  function disconnect() {
+      if (ws != null) {
+          ws.close();
+      }
+      setConnected(false);
+      console.log("Disconnected");
+  }
+
+  function showJSON(message) {
+      // $("#greetings").append(" " + message + "");
+  }
+
 }
 
 export default App;
