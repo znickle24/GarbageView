@@ -4,19 +4,27 @@ import com.sun.management.GarbageCollectionNotificationInfo;
 import com.sun.management.GarbageCollectorMXBean;
 import com.sun.management.GcInfo;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeData;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class GCInformation {
+
+    //this is the list of connected sockets. Made this static so it can be accessed from anywhere.
+   static List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+
   private static final String GC_BEAN_NAME = "java.lang:type=GarbageCollector,name=PS Scavenge";
   private static volatile GarbageCollectorMXBean gcMBean;
   /** Creates a new instance of GCInformation */
@@ -109,6 +117,13 @@ public class GCInformation {
             gcr.save(new GarbageCollection(info.getGcAction(), gctype, info.getGcInfo().getId(), info.getGcName(), info.getGcCause(),
                 duration, dbMUAGc, dbMUBGc, percent));
             //add to db and broadcast via socket
+              for(WebSocketSession session : sessions) {
+                  try {
+                      session.sendMessage(new TextMessage("Hello!"));
+                  } catch (IOException e) {
+                      e.printStackTrace();
+                  }
+              }
 
           }
         }

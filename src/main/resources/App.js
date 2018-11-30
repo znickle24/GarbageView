@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import './App.css';
 import GC from './GC.js'
-import { subscribeToTimer } from './api';
+// import { subscribeToTimer } from './api';
 import LineChart from './LineChart';
 // import NetPerformance from './NetPerformance';
 // import NetPerformance2 from './NetPerformance2';
 // import TimePerformance from './TimePerformance';
 
 class App extends Component {
+
   state = {
     gcs: [
       {gctype: 'test1', gctime: 25, id: 0}
@@ -19,8 +20,41 @@ class App extends Component {
   constructor(props) {
     super(props);
   
-    subscribeToTimer((err, gc) => 
-      this.addGC(gc));
+    // subscribeToTimer((err, gc) => 
+    //   this.addGC(gc));
+    this.connect();
+  }
+
+  connect() {
+    console.log("entering connect method in App.js");
+    ws = new WebSocket('ws://' + location.host+ '/garbageview'); //http://localhost:8080/garbageview
+    ws.onopen = function(){
+      console.log("connected");
+    }
+    ws.onmessage = function(data){
+        // showJSON(data.data);
+        showJSON();
+    }
+    mySocket.onerror = function(){
+      console.log("ERROR WITH WS CONNECTION");
+    };
+    mySocket.onclose = this.disconnect;
+  }
+
+  disconnect() {
+      if (ws != null) {
+          ws.close();
+      }
+      setConnected(false);
+      console.log("Disconnected");
+  }
+
+  // function showJSON(message) {
+  //     $("#greetings").append(" " + message + "");
+  // }
+  showJSON() {
+    message = "hello!";
+    $("#greetings").append(" " + message + "");
   }
 
   addGC = (gc) => {
@@ -60,27 +94,6 @@ class App extends Component {
       </div>
     );
   }
-
-  function connect() {
-      ws = new WebSocket('ws://localhost:8080/name');
-      ws.onmessage = function(data){
-          showJSON(data.data);
-      }
-      setConnected(true);
-  }
-
-  function disconnect() {
-      if (ws != null) {
-          ws.close();
-      }
-      setConnected(false);
-      console.log("Disconnected");
-  }
-
-  function showJSON(message) {
-      // $("#greetings").append(" " + message + "");
-  }
-
 }
 
 export default App;
