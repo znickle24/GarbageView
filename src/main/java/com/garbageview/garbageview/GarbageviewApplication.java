@@ -3,48 +3,46 @@ package com.garbageview.garbageview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.annotation.PostConstruct;
+import javax.persistence.*;
 import java.util.Collection;
 
 @SpringBootApplication
-public class GarbageviewApplication
+public class GarbageviewApplication //extends SpringBootServletInitializer
 {
 
-  public static void main(String[] args)
+
+
+  public static void runGVApp(String[] args)
   {
-    SpringApplication.run(GarbageviewApplication.class, args);
-    //upon starting the program, make sure to add the listener for gc events
+    ApplicationContext ctx = SpringApplication.run(GarbageviewApplication.class, args);
   }
 
+  @PostConstruct
+  @Autowired
   @Bean
   CommandLineRunner runner (GarbageCollectionRepo gcr) {
    return args -> {
      //as soon as the beans are ready, install the monitor for each gc event
      GCInformation.installGCMonitoring(gcr);
-
-     //the above start the monitoring - instead of printing this, save thi to the repo and broadcast via the socket out
-
-     //for initial testing before running with the actual gcMonitor, testing to make sure that these are saving in the repo
-     gcr.save( new GarbageCollection("PS1", "old", 21, "GCInfoName", "End of Loop",
-         1000, "UsedMemoryAfter", "UsedMemoryBefore", 25));
-     gcr.save( new GarbageCollection("PS1", "new", 21, "GCInfoName", "End of Loop",
-         1000, "UsedMemoryAfter", "UsedMemoryBefore", 26));
-     gcr.save( new GarbageCollection("Parallel", "new", 21, "GCInfoName", "End of Loop",
-         1000, "UsedMemoryAfter", "UsedMemoryBefore", 27));
+     //the above start the monitoring - instead of printing this, save this to the repo and broadcast via the socket out
      //print out each of these to make sure they're saved
      gcr.findAll().forEach(System.out::println);
-
    };
   }
 }
@@ -89,9 +87,9 @@ class GarbageCollection
   private String gcInfoName;
   private String gcInfoCause;
   private long gcInfoDuration;
-  @Column (length = 5000)
+  @Column (length = 500000)
   private String memoryUsageAfterGC;
-  @Column (length=5000)
+  @Column (length=500000)
   private String memoryUsageBeforeGC;
   private long gcOverhead;
 
