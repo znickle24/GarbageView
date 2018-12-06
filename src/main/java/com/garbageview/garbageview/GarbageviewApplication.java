@@ -35,6 +35,7 @@ public class GarbageviewApplication
 
      //the above start the monitoring - instead of printing this, save thi to the repo and broadcast via the socket out
 
+
      //for initial testing before running with the actual gcMonitor, testing to make sure that these are saving in the repo
      gcr.save( new GarbageCollection("PS1", "old", 21, "GCInfoName", "End of Loop",
          1000, "UsedMemoryAfter", "UsedMemoryBefore", 25));
@@ -119,6 +120,8 @@ class GarbageCollection
         gcInfoDuration + ", memoryUsageAfterGC=" + memoryUsageAfterGC + ", memoryUsageBeforeGC=" + memoryUsageBeforeGC +
         ", gcOverhead=" + gcOverhead + '\'' + "}";
   }
+
+  //add a toJson method here that uses GSON
 
   public long getId () { return id; }
 
