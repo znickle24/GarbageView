@@ -120,7 +120,7 @@ public class GCInformation {
               System.out.println("right before broadcast is called");
               for(WebSocketSession session : sessions) {
                   try {
-                      session.sendMessage(new TextMessage("Hello!"));
+                      session.sendMessage(new TextMessage("Hello!")); //gctype: 'test1', gctime: 25, id: 0
                   } catch (IOException e) {
                       e.printStackTrace();
                   }
