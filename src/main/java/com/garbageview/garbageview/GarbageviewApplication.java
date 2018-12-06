@@ -28,19 +28,27 @@ public class GarbageviewApplication //extends SpringBootServletInitializer
 
 
 
-  public static void runGVApp(String[] args)
+  public static void main(String[] args)
   {
     ApplicationContext ctx = SpringApplication.run(GarbageviewApplication.class, args);
   }
 
-  @PostConstruct
+//  @PostConstruct
   @Autowired
   @Bean
   CommandLineRunner runner (GarbageCollectionRepo gcr) {
    return args -> {
      //as soon as the beans are ready, install the monitor for each gc event
      GCInformation.installGCMonitoring(gcr);
-     //the above start the monitoring - instead of printing this, save this to the repo and broadcast via the socket out
+
+     //the above start the monitoring - instead of printing this, save thi to the repo and broadcast via the socket out
+     //for initial testing before running with the actual gcMonitor, testing to make sure that these are saving in the repo
+     gcr.save( new GarbageCollection("PS1", "old", 21, "GCInfoName", "End of Loop",
+         1000, "UsedMemoryAfter", "UsedMemoryBefore", 25));
+     gcr.save( new GarbageCollection("PS1", "new", 21, "GCInfoName", "End of Loop",
+         1000, "UsedMemoryAfter", "UsedMemoryBefore", 26));
+     gcr.save( new GarbageCollection("Parallel", "new", 21, "GCInfoName", "End of Loop",
+         1000, "UsedMemoryAfter", "UsedMemoryBefore", 27));
      //print out each of these to make sure they're saved
      gcr.findAll().forEach(System.out::println);
    };
@@ -117,6 +125,8 @@ class GarbageCollection
         gcInfoDuration + ", memoryUsageAfterGC=" + memoryUsageAfterGC + ", memoryUsageBeforeGC=" + memoryUsageBeforeGC +
         ", gcOverhead=" + gcOverhead + '\'' + "}";
   }
+
+  //add a toJson method here that uses GSON
 
   public long getId () { return id; }
 
