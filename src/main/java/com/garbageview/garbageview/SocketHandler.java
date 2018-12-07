@@ -35,4 +35,7 @@ public class SocketHandler extends TextWebSocketHandler {
 //here, add to the list in <></>he GCInformation
         //when connection closed remove it
     }
+
+    //afterconnectionclosed
+    //remove ws from set when connection is closed
 }

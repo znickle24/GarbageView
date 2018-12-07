@@ -1,13 +1,12 @@
 package com.garbageview.garbageview;
 
+import com.google.gson.Gson;
 import com.sun.management.GarbageCollectionNotificationInfo;
 import com.sun.management.GarbageCollectorMXBean;
-import com.sun.management.GcInfo;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
@@ -83,7 +82,9 @@ public class GCInformation {
               gctype = "Old Gen GC";
             }
             System.out.println();
-            System.out.println(gctype + ": - " + info.getGcInfo().getId()+ " " + info.getGcName() + " (from " + info.getGcCause()+") "+duration + " milliseconds; start-end times " + info.getGcInfo().getStartTime()+ "-" + info.getGcInfo().getEndTime());
+            System.out.println(gctype + ": - " + info.getGcInfo().getId()+ " " + info.getGcName() +
+                    " (from " + info.getGcCause()+") "+duration + " milliseconds; start-end times " +
+                    info.getGcInfo().getStartTime()+ "-" + info.getGcInfo().getEndTime());
             //uncomment this line if you'd like to get the composite types of the objects from GcInfo
             //System.out.println("GcInfo CompositeType: " + info.getGcInfo().getCompositeType());
             String memUsageAfterGc = info.getGcInfo().getMemoryUsageAfterGc().toString();
@@ -120,9 +121,13 @@ public class GCInformation {
               System.out.println("right before broadcast is called");
               for(WebSocketSession session : sessions) {
                   try {
-                      session.sendMessage(new TextMessage("Hello!")); //gctype: 'test1', gctime: 25, id: 0
+                    Gson gson = new Gson();
+                    GCToJSON gcIn = new GCToJSON(gctype, duration, info.getGcInfo().getId());
+                    String json = gson.toJson(gcIn);
+                    session.sendMessage(new TextMessage(json));
+//                      session.sendMessage(new TextMessage("Hello!")); //gctype: 'test1', gctime: 25, id: 0
                   } catch (IOException e) {
-                      e.printStackTrace();
+                      e.printStackTrace(); //won't expect this to fire very often
                   }
               }
 
@@ -134,10 +139,10 @@ public class GCInformation {
       emitter.addNotificationListener(listener, null, null);
     }
   }
-  public String toJSON(String dbInfo) {
-
-    return "";
-  }
+//  public String toJSON(String dbInfo) {
+//
+//    return "";
+//  }
 
 }
 

@@ -9,8 +9,7 @@ class App extends Component {
     gcs: [
       {gctype: 'test1', gctime: 25, id: 0}
     ],
-    times: [25, 15,100, 23
-    ]
+    times: [25, 15,100, 23]
   }
 
   constructor(props) {
@@ -19,9 +18,11 @@ class App extends Component {
 
     console.log("entering connect method in App.js");
     var ws = new WebSocket('ws://' + window.location.host + '/garbageview'); //http://localhost:8080/garbageview
+    console.log("in constructor");
     console.log(window.location.host);
     ws.onopen = function(){
       console.log("connected");
+      console.log(window.location.host);
     }
     ws.onmessage = function(data){
         // showJSON(data.data);
