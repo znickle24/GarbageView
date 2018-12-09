@@ -14,12 +14,13 @@ public class GCToJSON {
     long GCTime; // In milliseconds
     long Id;
     // Get the GC overhead
-    float GCOverhead;
+//    float GCOverhead;
 
     public GCToJSON(String gctype, long time, long id){
         GCType = gctype;
         GCTime = time;
         Id = id;
+        System.out.println(" ---- finished up gson construcotr ----");
     };
 
 //    public GCToJson(String gctype, long time) {

@@ -6,7 +6,7 @@ const GC = ({ gcs }) => {
     gcs.map(gc => {
       return  (
         <div className="gc" key={gc.id}>
-          <div>GC Type: { gc.gctype }, GC Time: { gc.gctime }, GC id: {gc.id}</div>
+          <div>GC Type: { gc.GCType }, GC Time: { gc.GCTime }, GC id: {gc.Id}</div>
         </div>
       )
     })

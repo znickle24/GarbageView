@@ -11,6 +11,7 @@ import javax.management.Notification;
 import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeData;
+import java.io.Console;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
@@ -22,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class GCInformation {
 
     //this is the list of connected sockets. Made this static so it can be accessed from anywhere.
-   static List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+  public static List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
   private static final String GC_BEAN_NAME = "java.lang:type=GarbageCollector,name=PS Scavenge";
   private static volatile GarbageCollectorMXBean gcMBean;
@@ -118,19 +119,20 @@ public class GCInformation {
             gcr.save(new GarbageCollection(info.getGcAction(), gctype, info.getGcInfo().getId(), info.getGcName(), info.getGcCause(),
                 duration, dbMUAGc, dbMUBGc, percent));
             //add to db and broadcast via socket
-              System.out.println("right before broadcast is called");
-              for(WebSocketSession session : sessions) {
-                  try {
-                    Gson gson = new Gson();
-                    GCToJSON gcIn = new GCToJSON(gctype, duration, info.getGcInfo().getId());
-                    String json = gson.toJson(gcIn);
-                    session.sendMessage(new TextMessage(json));
+            System.out.println("right before broadcast is called");
+            for(WebSocketSession session : sessions) {
+              try {
+                System.out.println("*** in try for GSON ***");
+                System.out.println("sessions size: " + sessions.size());
+                Gson gson = new Gson();
+                GCToJSON gcIn = new GCToJSON(gctype, duration, info.getGcInfo().getId());
+                String json = gson.toJson(gcIn);
+                session.sendMessage(new TextMessage(json));
 //                      session.sendMessage(new TextMessage("Hello!")); //gctype: 'test1', gctime: 25, id: 0
-                  } catch (IOException e) {
-                      e.printStackTrace(); //won't expect this to fire very often
-                  }
+              } catch (IOException e) {
+                  e.printStackTrace(); //won't expect this to fire very often
               }
-
+            }
           }
         }
       };

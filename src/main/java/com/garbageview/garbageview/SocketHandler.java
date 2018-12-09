@@ -2,6 +2,7 @@ package com.garbageview.garbageview;
 
 import com.google.gson.Gson;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -29,13 +30,20 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         //the messages will be broadcasted to all users.
-        System.out.println("in Connection established");
+        System.out.println("");
+        System.out.println("***  in Connection established");
         GCInformation.sessions.add(session);
-        System.out.println("passed add session");
+        System.out.println("*** sessions size: " + GCInformation.sessions.size());
+        System.out.println("*** passed add session");
 //here, add to the list in <></>he GCInformation
         //when connection closed remove it
     }
 
-    //afterconnectionclosed
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
     //remove ws from set when connection is closed
+    System.out.println("in Connection closed");
+    GCInformation.sessions.remove(session);
+    System.out.println("passed remove session");
+    }
 }

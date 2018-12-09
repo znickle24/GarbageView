@@ -7,16 +7,17 @@ class App extends Component {
 
   state = {
     gcs: [
-      {gctype: 'test1', gctime: 25, id: 0}
+      {GCType: 'test1', GCTime: 25, Id: 0} //{"GCType":"Young Gen GC","GCTime":623,"Id":16}
     ],
-    times: [25, 15,100, 23]
+    times: []
   }
 
-  constructor(props) {
+  constructor(props) { //-----
     super(props);
-    // this.connect();
-
+    
+    //connect to websocket
     console.log("entering connect method in App.js");
+    console.log('this1:' + this);
     var ws = new WebSocket('ws://' + window.location.host + '/garbageview'); //http://localhost:8080/garbageview
     console.log("in constructor");
     console.log(window.location.host);
@@ -24,60 +25,38 @@ class App extends Component {
       console.log("connected");
       console.log(window.location.host);
     }
+    console.log('this2:' + this);
     ws.onmessage = function(data){
-        // showJSON(data.data);
-        // this.showJSON();
+        console.log("data" + data.data);
+        var jsonObjectFromSocket = JSON.parse(data.data);
+        console.log("jofs = " + data.data);
+        console.log(JSON.parse(data.data));
+        console.log('at addGC ****');
+        console.log('this3:' + this);
+        this.addGC(jsonObjectFromSocket);
         console.log("in On message");
-    }
+    }.bind(this);
     ws.onerror = function(){
       console.log("ERROR WITH WS CONNECTION");
     };
     ws.onclose = this.disconnect;
-
-  }
+  } //-----
 
   componentDidMount() {
-    console.log("in comp did mount.----")
+    console.log("in comp did mount.----");
   }
 
-  // connect() {
-  //   console.log("entering connect method in App.js");
-  //   this.ws = new WebSocket('ws://' + window.location.host + '/garbageview'); //http://localhost:8080/garbageview
-  //   console.log(window.location.host);
-  //   this.ws.onopen = function(){
-  //     console.log("connected");
-  //   }
-  //   this.ws.onmessage = function(data){
-  //       // showJSON(data.data);
-  //       this.showJSON();
-  //   }
-  //   this.ws.onerror = function(){
-  //     console.log("ERROR WITH WS CONNECTION");
-  //   };
-  //   this.ws.onclose = this.disconnect;
-  // }
-
-  // disconnect() {
-  //     if (this.ws != null) {
-  //       this.ws.close();
-  //     }
-  //     // setConnected(false);
-  //     console.log("Disconnected");
-  // }
-
-  // function showJSON(message) {
-  //     $("#greetings").append(" " + message + "");
-  // }
-  // showJSON() {
-  //   message = "hello!";
-  //   $("#greetings").append(" " + message + "");
-  // }
-
   addGC = (gc) => {
-    let gcsCopy = [...this.state.gcs, gc]
-    this.setState({
-      gcs: gcsCopy
-    })
+    console.log('in addGC ****');
+    try{
+      let gcsCopy = [...this.state.gcs, gc]
+      this.setState({
+        gcs: gcsCopy
+      })
+    }
+    catch(err) {
+      console.log(err.message);
+    }
     console.log('gcs: ', this.state.gcs);
     console.log('times: ', this.state.times)
   }
@@ -86,7 +65,7 @@ class App extends Component {
 
   getTime = () => {
     if(this.state.gcs.length > 0) {
-      this.state.times.push(this.state.gcs[this.state.gcs.length-1].gctime)
+      this.state.times.push(this.state.gcs[this.state.gcs.length-1].GCTime)
     }
     console.log('times: ', this.state.times)
     return this.state.times.reduce(this.getSum, 0)
@@ -121,4 +100,38 @@ export default App;
   //     times: timesCopy
   //   })
   //   console.log('times: ', this.state.times)
+  // }
+
+
+  // connect() {
+  //   console.log("entering connect method in App.js");
+  //   this.ws = new WebSocket('ws://' + window.location.host + '/garbageview'); //http://localhost:8080/garbageview
+  //   console.log(window.location.host);
+  //   this.ws.onopen = function(){
+  //     console.log("connected");
+  //   }
+  //   this.ws.onmessage = function(data){
+  //       // showJSON(data.data);
+  //       this.showJSON();
+  //   }
+  //   this.ws.onerror = function(){
+  //     console.log("ERROR WITH WS CONNECTION");
+  //   };
+  //   this.ws.onclose = this.disconnect;
+  // }
+
+  // disconnect() {
+  //     if (this.ws != null) {
+  //       this.ws.close();
+  //     }
+  //     // setConnected(false);
+  //     console.log("Disconnected");
+  // }
+
+  // function showJSON(message) {
+  //     $("#greetings").append(" " + message + "");
+  // }
+  // showJSON() {
+  //   message = "hello!";
+  //   $("#greetings").append(" " + message + "");
   // }
