@@ -82,18 +82,18 @@ public class GCInformation {
             } else if ("end of major GC".equals(gctype)) {
               gctype = "Old Gen GC";
             }
-            System.out.println();
-            System.out.println(gctype + ": - " + info.getGcInfo().getId()+ " " + info.getGcName() +
-                    " (from " + info.getGcCause()+") "+duration + " milliseconds; start-end times " +
-                    info.getGcInfo().getStartTime()+ "-" + info.getGcInfo().getEndTime());
+//            System.out.println();
+//            System.out.println(gctype + ": - " + info.getGcInfo().getId()+ " " + info.getGcName() +
+//                    " (from " + info.getGcCause()+") "+duration + " milliseconds; start-end times " +
+//                    info.getGcInfo().getStartTime()+ "-" + info.getGcInfo().getEndTime());
             //uncomment this line if you'd like to get the composite types of the objects from GcInfo
             //System.out.println("GcInfo CompositeType: " + info.getGcInfo().getCompositeType());
             String memUsageAfterGc = info.getGcInfo().getMemoryUsageAfterGc().toString();
             String memUsageBeforeGc = info.getGcInfo().getMemoryUsageBeforeGc().toString();
             String dbMUAGc = "GcInfo MemoryUsageAfterGc: " + memUsageAfterGc;
             String dbMUBGc = "GcInfo MemoryUsageBeforeGc: " + memUsageBeforeGc;
-            System.out.println("GcInfo MemoryUsageAfterGc: " + memUsageAfterGc);
-            System.out.println("GcInfo MemoryUsageBeforeGc: " + memUsageBeforeGc);
+//            System.out.println("GcInfo MemoryUsageAfterGc: " + memUsageAfterGc);
+//            System.out.println("GcInfo MemoryUsageBeforeGc: " + memUsageBeforeGc);
 
             //Get the information about each memory space, and pretty print it
             Map<String, MemoryUsage> membefore = info.getGcInfo().getMemoryUsageBeforeGc();
@@ -109,23 +109,26 @@ public class GCInformation {
               long beforepercent = ((before.getUsed()*1000L)/before.getCommitted());
               long percent = ((memUsed*1000L)/before.getCommitted()); //>100% when it gets expanded
 
-              System.out.print(name + (memCommitted==memMax?"(fully expanded)":"(still expandable)") +"used: "+(beforepercent/10)+"."+(beforepercent%10)+"%->"+(percent/10)+"."+(percent%10)+"%("+((memUsed/1048576)+1)+"MB) / ");
+//              System.out.print(name + (memCommitted==memMax?"(fully expanded)":"(still expandable)") +"used: "
+//                      +(beforepercent/10)+"."+(beforepercent%10)+"%->"+(percent/10)+"."+(percent%10)+"%("+((memUsed/1048576)+1)+"MB) / ");
             }
-            System.out.println();
+//            System.out.println();
             totalGcDuration += info.getGcInfo().getDuration();
             long percent = totalGcDuration*1000L/info.getGcInfo().getEndTime();
-            System.out.println("GC cumulated overhead "+(percent/10)+"."+(percent%10)+"%");
+            String gcOverhead = ((percent/10)+"."+(percent%10)).toString();
+//            System.out.println("GC cumulated overhead "+(percent/10)+"."+(percent%10)+"%");
 
             gcr.save(new GarbageCollection(info.getGcAction(), gctype, info.getGcInfo().getId(), info.getGcName(), info.getGcCause(),
                 duration, dbMUAGc, dbMUBGc, percent));
             //add to db and broadcast via socket
-            System.out.println("right before broadcast is called");
+//            System.out.println("right before broadcast is called");
             for(WebSocketSession session : sessions) {
               try {
-                System.out.println("*** in try for GSON ***");
-                System.out.println("sessions size: " + sessions.size());
+//                System.out.println("*** in try for GSON ***");
+//                System.out.println("sessions size: " + sessions.size());
                 Gson gson = new Gson();
-                GCToJSON gcIn = new GCToJSON(gctype, duration, info.getGcInfo().getId());
+                GCToJSON gcIn = new GCToJSON(gctype, duration, info.getGcInfo().getId(), info.getGcName(),
+                        info.getGcCause(), memUsageBeforeGc, memUsageAfterGc, gcOverhead);
                 String json = gson.toJson(gcIn);
                 session.sendMessage(new TextMessage(json));
 //                      session.sendMessage(new TextMessage("Hello!")); //gctype: 'test1', gctime: 25, id: 0

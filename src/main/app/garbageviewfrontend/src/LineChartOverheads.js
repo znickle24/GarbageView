@@ -2,16 +2,16 @@ import React from 'react';
 import {Line} from 'react-chartjs-2';
 import 'chartjs-plugin-annotation';
 
-class LineChart extends React.Component {
+class LineChartOverheads extends React.Component {
   constructor(props) {
     super(props);
     console.log('props state: ', this.props);
-    console.log('props: ', this.props.times);
+    console.log('props: ', this.props.overheads);
   }
 
   render(){
     var labelsArr = []
-    for(var i = 0; i < this.props.times.length; i++){
+    for(var i = 0; i < this.props.overheads.length; i++){
       labelsArr.push(i)
     }
 
@@ -35,7 +35,7 @@ class LineChart extends React.Component {
       labels: labelsArr,
       datasets: [
         {
-          label: 'Garbage Collector Times',
+          label: 'Garbage Collector Overhead per Event',
           fill: false,
           lineTension: 0.1,
           backgroundColor: 'rgba(75,192,192,0.4)',
@@ -53,8 +53,7 @@ class LineChart extends React.Component {
           pointHoverBorderWidth: 2,
           pointRadius: 1,
           pointHitRadius: 10,
-          // data: [65, 59, 80, 81, 56, 55, 40]
-          data: this.props.times
+          data: this.props.overheads
         }
       ]
     };
@@ -70,4 +69,4 @@ class LineChart extends React.Component {
   }
 }
 
-export default LineChart;
+export default LineChartOverheads;

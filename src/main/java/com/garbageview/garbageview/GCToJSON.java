@@ -10,21 +10,31 @@ import com.google.gson.Gson;
  */
 public class GCToJSON {
 
+    long Id;
     String GCType;
     long GCTime; // In milliseconds
-    long Id;
+    String GCName;
+    String GCCause;
+//    String dbMUBGc;
+//    String dbMUAGc;
+    Float GCOverhead;
     // Get the GC overhead
 //    float GCOverhead;
 
-    public GCToJSON(String gctype, long time, long id){
+    public GCToJSON(String gctype, long time, long id, String name, String cause, String memBefore, String memAfter, String overhead){
+        String dbMUBGc;
+        String dbMUAGc;
+
         GCType = gctype;
         GCTime = time;
         Id = id;
-        System.out.println(" ---- finished up gson construcotr ----");
-    };
-
-//    public GCToJson(String gctype, long time) {
-//        GCType = gctype;
-//        GCTime = time;
-//    }
+        GCName = name;
+        GCCause = cause;
+        dbMUBGc = memBefore;
+        dbMUAGc = memAfter;
+        GCOverhead = Float.parseFloat(overhead);
+//        DecimalFormat df = new DecimalFormat();
+//        df.setMaximumFractionDigits(2);
+//        df.format(decimalNumber)
+    }
 }
