@@ -37,7 +37,7 @@ Make sure you include the dependencies while creating the jar.
 This application follows the general Spring Boot Application paradigms.
 
 ## Using the Data Dashboard
-## Starting the Dashboard:
+### Starting the Dashboard:
 - Make sure your application is running and the GarbageView.jar file has been properly added to you project.
 - Connect to http://localhost:8080/ .
 - The application should automatically recognize the connection and begin sending GC information to the dashboard.
