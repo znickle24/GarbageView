@@ -3,9 +3,11 @@ package com.garbageview.garbageview;
 import com.sun.management.GarbageCollectionNotificationInfo;
 import com.sun.management.GarbageCollectorMXBean;
 import com.sun.management.GcInfo;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.stereotype.Service;
+//import org.springframework.web.socket.TextMessage;
+//import org.springframework.web.socket.WebSocketSession;
 
 import javax.management.MBeanServer;
 import javax.management.Notification;
@@ -20,13 +22,15 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
+
 public class GCInformation {
 
     //this is the list of connected sockets. Made this static so it can be accessed from anywhere.
-   static List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+   //static List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
   private static final String GC_BEAN_NAME = "java.lang:type=GarbageCollector,name=PS Scavenge";
   private static volatile GarbageCollectorMXBean gcMBean;
+  
   /** Creates a new instance of GCInformation */
   public GCInformation() {
   }
@@ -54,8 +58,8 @@ public class GCInformation {
 //      throw new RuntimeException(exp);
 //    }
 //  }
-
-  public static void installGCMonitoring(GarbageCollectionRepo gcr){
+  @Bean
+  public static void installGCMonitoring(){
     //get all the GarbageCollectorMXBeans - there's one for each heap generation
     //so probably two - the old generation and young generation
     List<java.lang.management.GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
@@ -114,17 +118,17 @@ public class GCInformation {
             long percent = totalGcDuration*1000L/info.getGcInfo().getEndTime();
             System.out.println("GC cumulated overhead "+(percent/10)+"."+(percent%10)+"%");
 
-            gcr.save(new GarbageCollection(info.getGcAction(), gctype, info.getGcInfo().getId(), info.getGcName(), info.getGcCause(),
-                duration, dbMUAGc, dbMUBGc, percent));
+//            gcr.save(new GarbageCollection(info.getGcAction(), gctype, info.getGcInfo().getId(), info.getGcName(), info.getGcCause(),
+//                duration, dbMUAGc, dbMUBGc, percent));
             //add to db and broadcast via socket
               System.out.println("right before broadcast is called");
-              for(WebSocketSession session : sessions) {
-                  try {
-                      session.sendMessage(new TextMessage("Hello!")); //gctype: 'test1', gctime: 25, id: 0
-                  } catch (IOException e) {
-                      e.printStackTrace();
-                  }
-              }
+//              for(WebSocketSession session : sessions) {
+////                  try {
+////                      session.sendMessage(new TextMessage("Hello!")); //gctype: 'test1', gctime: 25, id: 0
+////                  } catch (IOException e) {
+////                      e.printStackTrace();
+////                  }
+////              }
 
           }
         }
