@@ -54,39 +54,39 @@ public class GarbageviewApplication //extends SpringBootServletInitializer
      gcr.findAll().forEach(System.out::println);
 
 
-     ArrayList<Integer> numberList = new ArrayList<Integer>();
-     ArrayList<Integer> numberList_2 = new ArrayList<Integer>();
-
-     int bigNum = 50000000; //50000000
-
-     long startTimeLoop = System.nanoTime();
-     for(int i = 0; i < bigNum; i++) {
-       numberList.add(i);
-     }
-     long endTimeLoop = System.nanoTime();
-     System.out.println("numberList has been filled");
-
-     // ----- While loop that runs for 2 minutes ----- //
-     int time = 6; //seconds
-
-     long startTimeWhile = System.nanoTime();
-     while(time > 0) {
-       ArrayList<Integer> numberList_3 = new ArrayList<Integer>();
-       numberList_3 = numberList;
-       String LoremIpsum = "Lorem ipsum dolor sit amet, ut sea liber conceptam quaerendum, labore ornatus quaestio in vis. Usu ad decore altera. Te autem maluisset dissentias pri, mel no pericula splendide. Omittantur consectetuer pri ut, est in idque movet urbanitas. Ei nam graecis tacimates quaerendum, aeterno numquam minimum vel ei. Eos minim iisque constituto in, per ea veri persius mentitum.";
-
-       numberList_3.remove(1);
-
-       System.out.println("here" + time);
-       try {
-         Thread.sleep(800);
-       } catch (InterruptedException e) {
-         e.printStackTrace();
-       }
-       time--;
-     }
-
-     System.out.println("done with stuff");
+//     ArrayList<Integer> numberList = new ArrayList<Integer>();
+//     ArrayList<Integer> numberList_2 = new ArrayList<Integer>();
+//
+//     int bigNum = 50000000; //50000000
+//
+//     long startTimeLoop = System.nanoTime();
+//     for(int i = 0; i < bigNum; i++) {
+//       numberList.add(i);
+//     }
+//     long endTimeLoop = System.nanoTime();
+//     System.out.println("numberList has been filled");
+//
+//     // ----- While loop that runs for 2 minutes ----- //
+//     int time = 6; //seconds
+//
+//     long startTimeWhile = System.nanoTime();
+//     while(time > 0) {
+//       ArrayList<Integer> numberList_3 = new ArrayList<Integer>();
+//       numberList_3 = numberList;
+//       String LoremIpsum = "Lorem ipsum dolor sit amet, ut sea liber conceptam quaerendum, labore ornatus quaestio in vis. Usu ad decore altera. Te autem maluisset dissentias pri, mel no pericula splendide. Omittantur consectetuer pri ut, est in idque movet urbanitas. Ei nam graecis tacimates quaerendum, aeterno numquam minimum vel ei. Eos minim iisque constituto in, per ea veri persius mentitum.";
+//
+//       numberList_3.remove(1);
+//
+//       System.out.println("here" + time);
+//       try {
+//         Thread.sleep(800);
+//       } catch (InterruptedException e) {
+//         e.printStackTrace();
+//       }
+//       time--;
+//     }
+//
+//     System.out.println("done with stuff");
    };
   }
 }
