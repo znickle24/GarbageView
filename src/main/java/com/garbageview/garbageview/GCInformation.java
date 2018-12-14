@@ -1,19 +1,17 @@
 package com.garbageview.garbageview;
 
+import com.google.gson.Gson;
 import com.sun.management.GarbageCollectionNotificationInfo;
 import com.sun.management.GarbageCollectorMXBean;
-import com.sun.management.GcInfo;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-//import org.springframework.web.socket.TextMessage;
-//import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
-import javax.management.MBeanServer;
 import javax.management.Notification;
 import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeData;
+import java.io.Console;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
@@ -22,15 +20,13 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-
 public class GCInformation {
 
     //this is the list of connected sockets. Made this static so it can be accessed from anywhere.
-   //static List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+  public static List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
   private static final String GC_BEAN_NAME = "java.lang:type=GarbageCollector,name=PS Scavenge";
   private static volatile GarbageCollectorMXBean gcMBean;
-  
   /** Creates a new instance of GCInformation */
   public GCInformation() {
   }
@@ -58,8 +54,8 @@ public class GCInformation {
 //      throw new RuntimeException(exp);
 //    }
 //  }
-  @Bean
-  public static void installGCMonitoring(){
+
+  public static void installGCMonitoring(GarbageCollectionRepo gcr){
     //get all the GarbageCollectorMXBeans - there's one for each heap generation
     //so probably two - the old generation and young generation
     List<java.lang.management.GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
@@ -86,16 +82,18 @@ public class GCInformation {
             } else if ("end of major GC".equals(gctype)) {
               gctype = "Old Gen GC";
             }
-            System.out.println();
-            System.out.println(gctype + ": - " + info.getGcInfo().getId()+ " " + info.getGcName() + " (from " + info.getGcCause()+") "+duration + " milliseconds; start-end times " + info.getGcInfo().getStartTime()+ "-" + info.getGcInfo().getEndTime());
+//            System.out.println();
+//            System.out.println(gctype + ": - " + info.getGcInfo().getId()+ " " + info.getGcName() +
+//                    " (from " + info.getGcCause()+") "+duration + " milliseconds; start-end times " +
+//                    info.getGcInfo().getStartTime()+ "-" + info.getGcInfo().getEndTime());
             //uncomment this line if you'd like to get the composite types of the objects from GcInfo
             //System.out.println("GcInfo CompositeType: " + info.getGcInfo().getCompositeType());
             String memUsageAfterGc = info.getGcInfo().getMemoryUsageAfterGc().toString();
             String memUsageBeforeGc = info.getGcInfo().getMemoryUsageBeforeGc().toString();
             String dbMUAGc = "GcInfo MemoryUsageAfterGc: " + memUsageAfterGc;
             String dbMUBGc = "GcInfo MemoryUsageBeforeGc: " + memUsageBeforeGc;
-            System.out.println("GcInfo MemoryUsageAfterGc: " + memUsageAfterGc);
-            System.out.println("GcInfo MemoryUsageBeforeGc: " + memUsageBeforeGc);
+//            System.out.println("GcInfo MemoryUsageAfterGc: " + memUsageAfterGc);
+//            System.out.println("GcInfo MemoryUsageBeforeGc: " + memUsageBeforeGc);
 
             //Get the information about each memory space, and pretty print it
             Map<String, MemoryUsage> membefore = info.getGcInfo().getMemoryUsageBeforeGc();
@@ -111,25 +109,33 @@ public class GCInformation {
               long beforepercent = ((before.getUsed()*1000L)/before.getCommitted());
               long percent = ((memUsed*1000L)/before.getCommitted()); //>100% when it gets expanded
 
-              System.out.print(name + (memCommitted==memMax?"(fully expanded)":"(still expandable)") +"used: "+(beforepercent/10)+"."+(beforepercent%10)+"%->"+(percent/10)+"."+(percent%10)+"%("+((memUsed/1048576)+1)+"MB) / ");
+//              System.out.print(name + (memCommitted==memMax?"(fully expanded)":"(still expandable)") +"used: "
+//                      +(beforepercent/10)+"."+(beforepercent%10)+"%->"+(percent/10)+"."+(percent%10)+"%("+((memUsed/1048576)+1)+"MB) / ");
             }
-            System.out.println();
+//            System.out.println();
             totalGcDuration += info.getGcInfo().getDuration();
             long percent = totalGcDuration*1000L/info.getGcInfo().getEndTime();
-            System.out.println("GC cumulated overhead "+(percent/10)+"."+(percent%10)+"%");
+            String gcOverhead = ((percent/10)+"."+(percent%10)).toString();
+//            System.out.println("GC cumulated overhead "+(percent/10)+"."+(percent%10)+"%");
 
-//            gcr.save(new GarbageCollection(info.getGcAction(), gctype, info.getGcInfo().getId(), info.getGcName(), info.getGcCause(),
-//                duration, dbMUAGc, dbMUBGc, percent));
+            gcr.save(new GarbageCollection(info.getGcAction(), gctype, info.getGcInfo().getId(), info.getGcName(), info.getGcCause(),
+                duration, dbMUAGc, dbMUBGc, percent));
             //add to db and broadcast via socket
-              System.out.println("right before broadcast is called");
-//              for(WebSocketSession session : sessions) {
-////                  try {
-////                      session.sendMessage(new TextMessage("Hello!")); //gctype: 'test1', gctime: 25, id: 0
-////                  } catch (IOException e) {
-////                      e.printStackTrace();
-////                  }
-////              }
-
+//            System.out.println("right before broadcast is called");
+            for(WebSocketSession session : sessions) {
+              try {
+//                System.out.println("*** in try for GSON ***");
+//                System.out.println("sessions size: " + sessions.size());
+                Gson gson = new Gson();
+                GCToJSON gcIn = new GCToJSON(gctype, duration, info.getGcInfo().getId(), info.getGcName(),
+                        info.getGcCause(), memUsageBeforeGc, memUsageAfterGc, gcOverhead);
+                String json = gson.toJson(gcIn);
+                session.sendMessage(new TextMessage(json));
+//                      session.sendMessage(new TextMessage("Hello!")); //gctype: 'test1', gctime: 25, id: 0
+              } catch (IOException e) {
+                  e.printStackTrace(); //won't expect this to fire very often
+              }
+            }
           }
         }
       };
@@ -138,10 +144,10 @@ public class GCInformation {
       emitter.addNotificationListener(listener, null, null);
     }
   }
-  public String toJSON(String dbInfo) {
-
-    return "";
-  }
+//  public String toJSON(String dbInfo) {
+//
+//    return "";
+//  }
 
 }
 
